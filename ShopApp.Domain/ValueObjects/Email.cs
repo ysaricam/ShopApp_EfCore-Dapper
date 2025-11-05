@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ShopApp.Domain.Abstractions.Guards;
 
 
 namespace ShopApp.Domain.ValueObjects;
@@ -8,11 +9,11 @@ public record Email
 
     public Email(string value)
     {
-        if(string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("E-posta adresi boş olamaz.", nameof(value));
+        Guard.Against.NullOrWhiteSpace(value, "E-posta adresi boş olamaz.");
         
-        if(!Regex.IsMatch(value, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-            throw new ArgumentException("Geçersiz e-posta formatı.");
+        Regex regex = new Regex("\"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$\"");
+        Guard.Against.InvalidFormat(value, regex, "Geçerli bir e-posta adresi olmalı.");
+
         
         Value = value.Trim().ToLower();
     }

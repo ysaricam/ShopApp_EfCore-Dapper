@@ -1,5 +1,6 @@
 using ShopApp.Domain.Enums;
 using ShopApp.Domain.ValueObjects;
+using ShopApp.Domain.Events;
 
 namespace ShopApp.Domain.Entities;
 
@@ -26,6 +27,8 @@ public class Order : Entity
         CustomerId = customerId;
         Status = OrderStatus.Pending; 
         CreatedAt = DateTime.UtcNow;
+        
+        AddDomainEvent(new OrderCreated(this.Id, this.CustomerId, this.CreatedAt));
     }
     
     private Order() : base() { }
@@ -68,6 +71,9 @@ public class Order : Entity
             throw new InvalidOperationException("Sadece 'Beklemede' olan siparişler 'Ödendi' olarak işaretlenebilir.");
         }
         Status = OrderStatus.Paid;
+        
+        AddDomainEvent(new OrderPaid(this.Id, DateTime.UtcNow));
+        
     }
 
     public void Ship()
@@ -77,6 +83,9 @@ public class Order : Entity
             throw new InvalidOperationException("Sadece 'Ödendi' olan siparişler 'Kargolandı' olarak işaretlenebilir.");
         }
         Status = OrderStatus.Shipped;
+        
+        AddDomainEvent(new OrderShipped(this.Id, DateTime.UtcNow));
+        
     }
 
     public void Cancel()
@@ -86,5 +95,8 @@ public class Order : Entity
             throw new InvalidOperationException("Kargolanmış sipariş iptal edilemez.");
         }
         Status = OrderStatus.Cancelled;
+        
+        AddDomainEvent(new OrderCancelled(this.Id, DateTime.UtcNow));
+        
     }
 }

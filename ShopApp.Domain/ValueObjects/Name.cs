@@ -1,3 +1,5 @@
+using ShopApp.Domain.Abstractions.Guards;
+
 namespace ShopApp.Domain.ValueObjects;
 
 public record Name
@@ -7,13 +9,12 @@ public record Name
 
     public Name(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("İsim Alanı boş olamaz.", nameof(value));
+       Guard.Against.NullOrWhiteSpace(value, "İsim alanı boş olamaz.");
         
         var trimmed = value.Trim();
         
-        if (trimmed.Length > MaxLength)
-            throw new ArgumentException($"İsim {MaxLength} karakterden uzun olamaz.", nameof(value));
+        Guard.Against.MaxLength(trimmed.Length, MaxLength,$"İsim {MaxLength} karakterden uzun olamaz.");
+
         
         Value = trimmed;
     }

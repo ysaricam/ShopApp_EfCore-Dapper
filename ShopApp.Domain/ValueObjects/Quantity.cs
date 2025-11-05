@@ -1,3 +1,5 @@
+using ShopApp.Domain.Abstractions.Guards;
+
 namespace ShopApp.Domain.ValueObjects;
 
 public record Quantity
@@ -6,8 +8,7 @@ public record Quantity
     
     public Quantity(int value)
     {
-        if (value < 0)
-            throw new ArgumentException("Adet sıfırdan küçük olamaz.");
+        Guard.Against.Negative(value, "Adet sıfırdan küçük olamaz.");
         Value = value;
     }
 

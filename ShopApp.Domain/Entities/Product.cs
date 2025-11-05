@@ -1,5 +1,7 @@
 using ShopApp.Domain.Enums;
 using ShopApp.Domain.ValueObjects;
+using ShopApp.Domain.Events;
+
 
 namespace ShopApp.Domain.Entities;
 
@@ -39,7 +41,10 @@ public class Product : Entity
     
     public void ChangePrice(Money newPrice)
     {
+        var oldPrice = Price;
         Price = newPrice;
+        //TODO
+        //AddDomainEvent(new ProductPriceChanged(this.Id, oldPrice, newPrice, DateTime.UtcNow));
     }
     
     public void Activate()
@@ -59,10 +64,14 @@ public class Product : Entity
         {
 
             StockQuantity = StockQuantity.Subtract(quantity);
+            
+            AddDomainEvent(new InventoryDecreased(this.Id, quantity, DateTime.UtcNow));
         }
         else if (type == InventoryMovementType.Increase)
         {
             StockQuantity = StockQuantity.Add(quantity);
+            
+            AddDomainEvent(new InventoryIncreased(this.Id, quantity, DateTime.UtcNow));
         }
 
         var movement = new InventoryMovement(

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ShopApp.Domain.Abstractions.Guards;
 
 namespace ShopApp.Domain.ValueObjects;
 
@@ -10,20 +11,14 @@ public record Sku
     
     public Sku(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new ArgumentException("SKU (Ürün Kodu) boş olamaz.", nameof(value));
-        }
+        Guard.Against.NullOrWhiteSpace(value, "SKU (Ürün Kodu) boş olamaz.");
 
 
         var normalizedValue = value.Trim()
             .ToUpper()
             .Replace("_", "-");
 
-        if (!_formatRegex.IsMatch(normalizedValue))
-        {
-            throw new FormatException("SKU (Ürün Kodu) geçersiz karakterler içeriyor. Sadece harf, rakam, alt çizgi (_) ve tire (-) içerebilir.");
-        }
+        Guard.Against.InvalidFormat(normalizedValue,_formatRegex, "SKU (Ürün Kodu) geçersiz karakterler içeriyor. Sadece harf, rakam, alt çizgi (_) ve tire (-) içerebilir.");
 
         Value = normalizedValue;
     }

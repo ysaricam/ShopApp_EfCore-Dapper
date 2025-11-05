@@ -1,3 +1,5 @@
+using ShopApp.Domain.Abstractions.Guards;
+
 namespace ShopApp.Domain.ValueObjects;
 
 public record Money
@@ -7,12 +9,8 @@ public record Money
     
     public Money(decimal amount, string currency)
     {
-        if (amount <= 0)
-            throw new ArgumentException("Fiyat 0' dan büyük olmalıdır.");
-        
-        if(string.IsNullOrWhiteSpace(currency))
-            throw new ArgumentException("Para birimi boş olamaz.", nameof(currency));
-        
+        Guard.Against.Negative(amount, "Para miktarı negatif olamaz.");
+        Guard.Against.NullOrWhiteSpace(currency, "Para birimi boş olamaz.");
         Amount = amount;
         Currency = currency.ToUpper();        
     }
